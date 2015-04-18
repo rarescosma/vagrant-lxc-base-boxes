@@ -7,7 +7,7 @@ utils.lxc.attach() {
 }
 
 utils.lxc.start() {
-  lxc-start -d -n ${CONTAINER} &>>${LOG} || true
+  lxc-start -s lxc.console=/dev/null -d -n ${CONTAINER} &>>${LOG} || true
 }
 
 utils.lxc.stop() {

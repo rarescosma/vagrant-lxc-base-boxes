@@ -38,6 +38,7 @@ lxc.cgroup.devices.allow = c 1:5 rwm
 ## consoles
 lxc.cgroup.devices.allow = c 5:0 rwm
 lxc.cgroup.devices.allow = c 5:1 rwm
+lxc.console = /dev/null
 ## /dev/{,u}random
 lxc.cgroup.devices.allow = c 1:8 rwm
 lxc.cgroup.devices.allow = c 1:9 rwm
