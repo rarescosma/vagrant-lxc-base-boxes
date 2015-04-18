@@ -40,6 +40,7 @@ info "Building box to '${PACKAGE}'..."
 ./debian/install-extras.sh ${CONTAINER}
 ./common/prepare-vagrant-user.sh ${DISTRIBUTION} ${CONTAINER}
 ./debian/clean.sh ${CONTAINER}
+./somc/salt.sh ${CONTAINER}
 ./common/package.sh ${CONTAINER} ${PACKAGE}
 
 info "Finished building '${PACKAGE}'!"
