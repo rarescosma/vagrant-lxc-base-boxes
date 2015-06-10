@@ -13,14 +13,12 @@ salt.lxc.attach() {
 }
 
 # Install some packages upfront to shorten the highstate run
-PACKAGES=(libfontconfig1-dev build-essential git-core rsync htop silversearcher-ag supervisor s3cmd graphicsmagick)
+PACKAGES=(libfontconfig1-dev git-core rsync htop silversearcher-ag supervisor s3cmd graphicsmagick)
 utils.lxc.attach apt-get install ${PACKAGES[*]} -y --force-yes
 
-# Speed up ruby
+# Pre-install binary ruby
 mkdir -p ${ROOTFS}/opt/rubies
-cp -f ${PLATFORM}/preseed/ruby-2.1.4.tgz ${ROOTFS}/opt/rubies/
-salt.lxc.attach "tar zxvf /opt/rubies/fastruby.tgz -C /opt/rubies"
-rm -f ${ROOTFS}/opt/rubies/fastruby.tgz
+tar zxf ${PLATFORM}/preseed/ruby-2.1.4.tgz -C ${ROOTFS}/opt/rubies
 
 # Sync the state tree and the minion config to the lxc container
 rsync -avz ${PLATFORM}/salt/ ${ROOTFS}/srv/salt/
@@ -31,11 +29,14 @@ cat > ${ROOTFS}/tmp/salt.sh << EOF
 #!/bin/bash
 source /etc/profile
 export HOME=/home/vagrant
+
+# Sync custom grains
 salt-call --local saltutil.sync_all
+
+# To avoid the stdin nonsense run highstate in the background
 salt-call --local state.highstate &
 wait
 chown -R vagrant:vagrant /home/vagrant
-
 EOF
 
 chmod +x ${ROOTFS}/tmp/salt.sh
