@@ -10,7 +10,7 @@ debug 'Bringing container up'
 utils.lxc.start
 
 # Sleep for a bit so that the container can get an IP
-SECS=15
+SECS=3
 log "Sleeping for $SECS seconds..."
 sleep $SECS
 
@@ -29,8 +29,9 @@ if [ $RELEASE != 'stretch' ] ; then
   PACKAGES+=' python-software-properties'
 fi
 utils.lxc.attach apt-get update
-utils.lxc.attach apt-get install ${PACKAGES[*]} -y --force-yes
-utils.lxc.attach apt-get upgrade -y --force-yes
+utils.lxc.attach apt-get install ${PACKAGES[*]} -y
+utils.lxc.attach apt-get upgrade -y
+utils.lxc.attach service ssh restart
 
 ANSIBLE=${ANSIBLE:-0}
 CHEF=${CHEF:-0}
@@ -82,7 +83,7 @@ if [ $PUPPET = 1 ]; then
     wget http://apt.puppetlabs.com/puppetlabs-release-${RELEASE}.deb -O "${ROOTFS}/tmp/puppetlabs-release-stable.deb" &>>${LOG}
     utils.lxc.attach dpkg -i "/tmp/puppetlabs-release-stable.deb"
     utils.lxc.attach apt-get update
-    utils.lxc.attach apt-get install puppet -y --force-yes
+    utils.lxc.attach apt-get install puppet -y
   fi
 else
   log "Skipping Puppet installation"
@@ -133,26 +134,8 @@ if [ $SALT = 1 ]; then
       utils.lxc.attach apt-key add /tmp/salt.key
     fi
     utils.lxc.attach apt-get update
-    utils.lxc.attach apt-get install salt-minion -y --force-yes
+    utils.lxc.attach apt-get install salt-minion -y
   fi
 else
   log "Skipping Salt installation"
-fi
-
-if [ $BABUSHKA = 1 ]; then
-  if $(lxc-attach -n ${CONTAINER} -- which babushka &>/dev/null); then
-    log "Babushka has been installed on container, skipping"
-  elif [ ${RELEASE} = 'trusty' ]; then
-    warn "Babushka can't be installed on Ubuntu Trusty 14.04, skipping"
-  else
-    log "Installing Babushka"
-    cat > $ROOTFS/tmp/install-babushka.sh << EOF
-#!/bin/sh
-curl https://babushka.me/up | sudo bash
-EOF
-    chmod +x $ROOTFS/tmp/install-babushka.sh
-    utils.lxc.attach /tmp/install-babushka.sh
-  fi
-else
-  log "Skipping Babushka installation"
 fi

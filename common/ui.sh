@@ -5,6 +5,12 @@ export OK_COLOR='\033[32;01m'
 export ERROR_COLOR='\033[31;01m'
 export WARN_COLOR='\033[33;01m'
 
+append() {
+  WHAT=$1
+  FILENAME=$2
+  grep -q -F "$WHAT" $FILENAME || echo "$WHAT" >> $FILENAME
+}
+
 log() {
   LOG_PREFIX="${DISTRIBUTION}-${RELEASE}"
   echo "    [${LOG_PREFIX}] ${1}" >>${LOG}
