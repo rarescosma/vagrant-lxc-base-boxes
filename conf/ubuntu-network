@@ -1,0 +1,7 @@
+lxc.network.type = veth
+lxc.network.flags = up
+lxc.network.link = br0
+lxc.network.name = eth0
+lxc.network.mtu = 1500
+lxc.network.ipv4 = <THE_IP>/24
+lxc.network.ipv4.gateway = <THE_GATEWAY>
