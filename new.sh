@@ -70,6 +70,6 @@ EOF
 
 log "Restarting the minion."
 utils.lxc.attach service salt-minion restart
-utils.lxc.attach salt-call --local state.highstate
 
 # Step 4. Highstate
+utils.lxc.attach salt-call --local state.highstate
